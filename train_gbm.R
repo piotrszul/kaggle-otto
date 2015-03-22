@@ -19,10 +19,10 @@ trainIndex = createDataPartition(cov_and_res$target, p=0.75, list= FALSE)
 #trainSet <- cov_and_res[trainIndex,]
 trainSet <- cov_and_res
 
-tuneGrid <- expand.grid(n.trees = c(200), interaction.depth = c(5,10), shrinkage = c(0.1,0.05))
+tuneGrid <- expand.grid(n.trees = c(300,600), interaction.depth = c(5,10), shrinkage = c(0.1,0.05))
 trControl <- trainControl(method="cv", number=3, 
                           verboseIter=TRUE,
-                          allowParallel = TRUE)
+                          allowParallel = FALSE)
 gbmModel <- train(target ~ ., 
                   data=trainSet, method="gbm",
                   trControl = trControl,
