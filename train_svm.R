@@ -24,25 +24,24 @@ test_data <- read.csv('target/test.csv')
 set.seed(100)
 
 cov_and_res  = subset(train_data, select=-id)
-trainIndex = createDataPartition(cov_and_res$target, p=0.75, list= FALSE)
+trainIndex = createDataPartition(cov_and_res$target, p=0.95, list= FALSE)
 
 #trainSet <- cov_and_res[-trainIndex,]
 trainSet <- cov_and_res
 trControl <- trainControl(method="cv",
-                          number=10,
+                    number=5,
                     verboseIter=TRUE,
                     summaryFunction = multiLogLoss,
                     classProbs = TRUE, 
-                    allowParallel = FALSE)
+                    allowParallel = TRUE)
 
 gbmModel <- train(target ~ ., 
-                  data=trainSet, method="rf",
-                  importance = TRUE,
-                  ntree = 150,
+                  data=trainSet, method="svmRadial",
+                  preProcess=c("center","scale"),
                   trControl = trControl,
                   metric = "LOGLOSS",
                   maximize = FALSE,
-                  tuneGrid = data.frame(mtry=c(12, 14))
+                  tuneLength = 1
 )
 
 print(gbmModel$results)
