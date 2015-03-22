@@ -1,14 +1,17 @@
-library(lubridate)
-library(Hmisc)
 library(caret)
-library(ggplot2)
-library(plyr)
 library(doParallel)
 
 train_data <- read.csv('target/train.csv')
 test_data <- read.csv('target/test.csv')
+
+print('train data')
+summary(train_data)
+print('test data')
+summary(test_data)
+
+
 set.seed(100)
-cl <- makeCluster(3)
+cl <- makeCluster(16)
 registerDoParallel(cl)
 cov_and_res  = subset(train_data, select=-id)
 trainIndex = createDataPartition(cov_and_res$target, p=0.75, list= FALSE)
@@ -23,7 +26,7 @@ trControl <- trainControl(method="cv", number=3,
 gbmModel <- train(target ~ ., 
                   data=trainSet, method="gbm",
                   trControl = trControl,
-                  tuneGrid = tuneGrid
+                  tuneGrid = tuneGrid 
 )
 
 print(gbmModel$bestTune)
