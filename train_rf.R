@@ -1,12 +1,8 @@
-library(lubridate)
-library(Hmisc)
 library(caret)
-library(ggplot2)
-library(plyr)
+library(doMPI)
 
-library(doParallel)
-cl <- makeCluster(3)
-registerDoParallel(cl)
+cl <- startMPIcluster(count=32)
+registerDoMPI(cl)
 
 multiLogLoss <-function (data, lev = NULL, model = NULL) {
     print("multiLogLoss")
@@ -24,7 +20,7 @@ test_data <- read.csv('target/test.csv')
 set.seed(100)
 
 cov_and_res  = subset(train_data, select=-id)
-trainIndex = createDataPartition(cov_and_res$target, p=0.75, list= FALSE)
+trainIndex = createDataPartition(cov_and_res$target, p=0.95, list= FALSE)
 
 #trainSet <- cov_and_res[-trainIndex,]
 trainSet <- cov_and_res
@@ -38,16 +34,16 @@ trControl <- trainControl(method="cv",
 gbmModel <- train(target ~ ., 
                   data=trainSet, method="rf",
                   importance = TRUE,
-                  ntree = 150,
+                  ntree = 500,
                   trControl = trControl,
                   metric = "LOGLOSS",
                   maximize = FALSE,
-                  tuneGrid = data.frame(mtry=c(12, 14))
+                  tuneGrid = data.frame(mtry=c(18,20,25))
 )
 
 print(gbmModel$results)
 print(gbmModel$bestTune)
-stopCluster(cl)
+closeCluster(cl)
 #test_pred <- predict(gbmModel, newdata = test_data)
 #result <-lapply(1:9, FUN=function(x) {as.numeric(as.numeric(test_pred) == x)})
 #names(result) = lapply(1:9, FUN = function(i) {paste('Class_', i, sep='')})
@@ -55,6 +51,6 @@ stopCluster(cl)
 #write.csv(final,"subtmit.csv", row.names=FALSE, quote=FALSE )
 test_prob_pred <- predict(gbmModel, newdata = test_data, type='prob')
 final_prob <- data.frame(id = test_data$id, test_prob_pred)
-write.csv(final_prob,"target/subtmit-prob.csv", row.names=FALSE, quote=FALSE )
+write.csv(final_prob,"target/subtmit-prob-rf.csv", row.names=FALSE, quote=FALSE )
 
 
