@@ -35,7 +35,7 @@ trControl <- trainControl(method="cv", number=10,
                           verboseIter=TRUE,
                           summaryFunction = multiLogLoss,
                           classProbs = TRUE,                           
-                          allowParallel = FALSE)
+                          allowParallel = TRUE)
 
 gbmModel <- train(target ~ ., 
                   data=trainSet, method="gbm",
