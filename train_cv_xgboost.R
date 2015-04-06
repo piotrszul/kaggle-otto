@@ -32,10 +32,18 @@ testSet <- cov_and_res[-trainIndex,]
 trainMatrix <- as.matrix(trainSet[,1:93])
 storage.mode(trainMatrix) <- "double"
 
-bst <- xgboost(data = trainMatrix, label = as.numeric(trainSet$target)-1, max.depth = 10,  nthread=4,
-               eta = 0.05, nrounds = 100,objective = "multi:softprob", 
-               eval_metric ="mlogloss", 
-               verbose=1, num_class=length(levels(trainSet$target)))
+trainData <- xgb.DMatrix(trainMatrix, label = as.numeric(trainSet$target)-1)
+testMatrix <- as.matrix(testSet[,1:93])
+storage.mode(testMatrix) <- "double"
+testData <-  xgb.DMatrix(testMatrix, label = as.numeric(testSet$target)-1)
+params <- list(max.depth = 10,  nthread=4,
+           eta = 0.05, objective = "multi:softprob", 
+           eval_metric ="mlogloss", 
+           num_class=length(levels(trainSet$target)))
+
+bst <- xgb.train(params = params, data = trainData,nrounds = 200, 
+                 verbose=1,
+                 watchlist=list(train=trainData, test= testData))
 
 testMatrix <- as.matrix(testSet[,1:93])
 storage.mode(testMatrix) <- "double"
