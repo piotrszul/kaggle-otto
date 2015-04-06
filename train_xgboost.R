@@ -32,8 +32,8 @@ testSet <- cov_and_res[-trainIndex,]
 trainMatrix <- as.matrix(trainSet[,1:93])
 storage.mode(trainMatrix) <- "double"
 
-bst <- xgboost(data = trainMatrix, label = as.numeric(trainSet$target)-1, max.depth = 10,  nthread=4,
-               eta = 0.05, nrounds = 600,objective = "multi:softprob", 
+bst <- xgboost(data = trainMatrix, label = as.numeric(trainSet$target)-1, max.depth = 10,  nthread=16,
+               eta = 0.005, nrounds = 2500,objective = "multi:softprob", 
                eval_metric ="mlogloss", 
                verbose=1, num_class=length(levels(trainSet$target)))
 
