@@ -28,15 +28,12 @@ trainSet <- cov_and_res
 trainMatrix <- as.matrix(trainSet[,1:93])
 storage.mode(trainMatrix) <- "double"
 trainData <- xgb.DMatrix(trainMatrix, label = as.numeric(trainSet$target)-1)
-params <- list(max.depth = 10,  nthread=4,
-           eta = 0.05, objective = "multi:softprob", 
+params <- list(max.depth = 14,  nthread=16, subsample = 0.75, colsample_bytree = 0.5,
+           eta = 0.01, min_child_weight=6,  objective = "multi:softprob", 
            eval_metric ="mlogloss", 
            num_class=length(levels(trainSet$target)))
 
-cv <-xgb.cv(params = params, data = trainData,nrounds = 200, nfold = 3)
-nrounds <- which.min(as.numeric(cv$test.mlogloss.mean))
-print(nrounds)
-print(cv$test.mlogloss.mean[nrounds])
+nrounds <-2246
 bst <- xgb.train(params = params, data = trainData,nrounds = nrounds, 
                  verbose=1,
                  watchlist=list(train=trainData))
