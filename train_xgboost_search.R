@@ -17,7 +17,7 @@ if (is.na(taskId)) {
     taskId <- 1
 }
 
-nrounds <- 10
+nrounds <- 3000
 nfold <- 3
 
 train_data <- read.csv('target/train.csv')
@@ -29,9 +29,10 @@ storage.mode(trainMatrix) <- "double"
 trainData <- xgb.DMatrix(trainMatrix, label = as.numeric(trainSet$target)-1)
 #commandArgs
 
-paramGrid <- expand.grid(max.depth=c(1, 5, 10, 20), eta=c(0.05, 0.01, 0.005))
+paramGrid <- expand.grid(max.depth=c(13,15,17), eta=c(0.01), subsample=c(0.75), colsample_bytree=c(0.5), min_child_weight=c(5,6,7))
+#paramGrid <- expand.grid(max.depth=c(8, 10, 12), eta=c(0.01,0.008), subsample=c(1,0.75,0.5), colsample_bytree=c(1,0.75,0.5))
 str(paramGrid)
-taskParams <- as.list(paramGrid[1,])
+taskParams <- as.list(paramGrid[taskId,])
 
 print("Running task")
 print(taskId)

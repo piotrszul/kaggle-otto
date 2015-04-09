@@ -36,12 +36,12 @@ trainData <- xgb.DMatrix(trainMatrix, label = as.numeric(trainSet$target)-1)
 testMatrix <- as.matrix(testSet[,1:93])
 storage.mode(testMatrix) <- "double"
 testData <-  xgb.DMatrix(testMatrix, label = as.numeric(testSet$target)-1)
-params <- list(max.depth = 10,  nthread=4,
-           eta = 0.05, objective = "multi:softprob", 
+params <- list(max.depth = 6,  nthread=16,
+           eta = 0.05, objective = "multi:softprob", subsample=0.75, colsample_bytree=0.3, 
            eval_metric ="mlogloss", 
            num_class=length(levels(trainSet$target)))
 
-bst <- xgb.train(params = params, data = trainData,nrounds = 200, 
+bst <- xgb.train(params = params, data = trainData,nrounds = 2500, 
                  verbose=1,
                  watchlist=list(train=trainData, test= testData))
 

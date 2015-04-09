@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name="testjob"
+#SBATCH --job-name="search"
 #SBATCH --time=2:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
@@ -10,6 +10,6 @@ module load R/3.0.2
 module load openmpi/1.4.5
 module load gcc/4.9.2
 
-R --vanilla  < train_cv_xgboost.R 
+R --vanilla --args $SLURM_ARRAY_TASK_ID  < train_xgboost_search.R
 
 
